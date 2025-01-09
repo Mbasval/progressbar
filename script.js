@@ -16,22 +16,24 @@ document.addEventListener("DOMContentLoaded", () => {
   // Admin Page: Add a New Client
   const addClientButton = document.getElementById("addClientButton");
   const clientList = document.getElementById("clientList");
-  const selectClient = document.getElementById("selectClient");
 
-  // Update client dropdown and list with existing clients
+  // Update client list
   function updateClientList() {
     clientList.innerHTML = ''; // Reset the list
     for (const clientName in clientsData) {
       const client = clientsData[clientName];
-      
-      // Create client list item with progress slider
+
+      // Create client list item with progress slider and delete button
       const listItem = document.createElement("li");
       listItem.innerHTML = `
         <strong>${clientName}</strong> - Progress: 
         <input type="range" min="0" max="${client.steps}" value="${client.currentStep}" class="progressSlider" data-client="${clientName}">
         <span class="progressLabel">${client.currentStep} / ${client.steps}</span>
+        <button class="deleteClientButton" data-client="${clientName}">Delete Client</button>
+        <br><br>
+        <input type="text" value="${window.location.origin}/client.html?clientName=${encodeURIComponent(clientName)}" readonly>
       `;
-      
+
       // Event listener for progress slider
       const progressSlider = listItem.querySelector(".progressSlider");
       progressSlider.addEventListener("input", (e) => {
@@ -42,6 +44,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Update the progress label dynamically
         listItem.querySelector(".progressLabel").textContent = `${newProgress} / ${client.steps}`;
+      });
+
+      // Event listener for delete button
+      const deleteButton = listItem.querySelector(".deleteClientButton");
+      deleteButton.addEventListener("click", () => {
+        delete clientsData[clientName];
+        saveClientsData(clientsData);
+        updateClientList(); // Refresh the client list
       });
 
       // Append to the list
@@ -81,29 +91,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initial population of the client list
   updateClientList();
-});
-
-// CLIENT PAGE
-document.addEventListener("DOMContentLoaded", () => {
-  const storedData = getClientsData();
-  
-  // Get the client name from the URL query string
-  const urlParams = new URLSearchParams(window.location.search);
-  const clientName = urlParams.get('clientName');
-
-  if (clientName && storedData[clientName]) {
-    const client = storedData[clientName];
-    
-    // Display client data
-    document.getElementById("clientName").textContent = clientName;
-    document.getElementById("deadline").textContent = client.deadline;
-
-    // Update progress bar based on the steps completed
-    const progressBar = document.getElementById("progressBar");
-    const progressPercentage = (client.currentStep / client.steps) * 100 || 0;
-    progressBar.style.width = `${progressPercentage}%`;
-    progressBar.textContent = `${Math.round(progressPercentage)}%`;
-  } else {
-    alert("Client data not found.");
-  }
 });
