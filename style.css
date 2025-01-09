@@ -1,59 +1,64 @@
 body {
-    font-family: Arial, sans-serif;
-    padding: 20px;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 h1 {
-    color: #333;
+  margin: 20px 0;
 }
 
-form {
-    margin-bottom: 20px;
+form, #client-list {
+  width: 90%;
+  max-width: 600px;
+  margin: 20px 0;
 }
 
-input {
-    margin-bottom: 10px;
-    padding: 10px;
-    font-size: 16px;
-    width: 100%;
+input, button {
+  padding: 10px;
+  margin: 5px 0;
+  width: 100%;
 }
 
 button {
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
 }
 
 button:hover {
-    background-color: #45a049;
+  background-color: #0056b3;
 }
 
-#progress-container {
-    width: 100%;
-    background-color: #f3f3f3;
-    border: 1px solid #ccc;
-    margin-top: 20px;
-    height: 30px;
-    border-radius: 5px;
+.progress-container {
+  width: 90%;
+  max-width: 600px;
+  height: 30px;
+  background-color: #f3f3f3;
+  border: 1px solid #ccc;
+  margin-top: 20px;
 }
 
 #progress-bar {
-    width: 0;
-    height: 100%;
-    background-color: #4CAF50;
-    text-align: center;
-    line-height: 30px;
-    color: white;
-    border-radius: 5px;
+  height: 100%;
+  background-color: #4caf50;
+  width: 0;
 }
 
-ul {
-    list-style-type: none;
-    padding: 0;
+#client-list div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
 }
 
-li {
-    margin: 5px 0;
+#client-list button {
+  background-color: red;
+  color: white;
 }
