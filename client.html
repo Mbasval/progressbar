@@ -4,24 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Client Page</title>
-
-    <!-- Firebase CDN scripts -->
-    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js"></script>
-
-    <!-- Link to CSS file -->
     <link rel="stylesheet" href="style.css">
+    <script type="module" src="script.js" defer></script>
 </head>
 <body>
-    <div id="clientPage">
-        <h1>Progress for <span id="clientName"></span></h1>
-        <p id="clientDeadline"></p>
-        <div id="progressContainer">
-            <div id="progressBar"></div>
-        </div>
-    </div>
+    <h1>Client Progress</h1>
+    <p>Name: <span id="client-name"></span></p>
+    <p>Deadline: <span id="client-deadline"></span></p>
+    <p>Steps Completed: <span id="steps-completed"></span></p>
 
-    <!-- Link to JS file -->
-    <script src="script.js"></script>
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
 </body>
 </html>
