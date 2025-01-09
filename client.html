@@ -1,20 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Page</title>
-    <link rel="stylesheet" href="style.css">
-    <script type="module" src="script.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Progress</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
 </head>
 <body>
-    <h1>Client Progress</h1>
-    <p>Name: <span id="client-name"></span></p>
-    <p>Deadline: <span id="client-deadline"></span></p>
-    <p>Steps Completed: <span id="steps-completed"></span></p>
-
-    <div id="progress-container">
-        <div id="progress-bar"></div>
-    </div>
+  <h1 id="client-name"></h1>
+  <p id="deadline"></p>
+  <div class="progress-container">
+    <div id="progress-bar"></div>
+  </div>
 </body>
 </html>
