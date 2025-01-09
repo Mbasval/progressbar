@@ -15,6 +15,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Admin Page: Add a New Client
   const addClientButton = document.getElementById("addClientButton");
+  const clientList = document.getElementById("clientList");
+  const selectClient = document.getElementById("selectClient");
+
+  // Update client dropdown and list with existing clients
+  function updateClientList() {
+    clientList.innerHTML = ''; // Reset the list
+    for (const clientName in clientsData) {
+      const client = clientsData[clientName];
+      
+      // Create client list item with progress slider
+      const listItem = document.createElement("li");
+      listItem.innerHTML = `
+        <strong>${clientName}</strong> - Progress: 
+        <input type="range" min="0" max="${client.steps}" value="${client.currentStep}" class="progressSlider" data-client="${clientName}">
+        <span class="progressLabel">${client.currentStep} / ${client.steps}</span>
+      `;
+      
+      // Event listener for progress slider
+      const progressSlider = listItem.querySelector(".progressSlider");
+      progressSlider.addEventListener("input", (e) => {
+        const clientName = e.target.dataset.client;
+        const newProgress = parseInt(e.target.value);
+        clientsData[clientName].currentStep = newProgress;
+        saveClientsData(clientsData);
+
+        // Update the progress label dynamically
+        listItem.querySelector(".progressLabel").textContent = `${newProgress} / ${client.steps}`;
+      });
+
+      // Append to the list
+      clientList.appendChild(listItem);
+    }
+  }
+
   if (addClientButton) {
     addClientButton.addEventListener("click", () => {
       const clientName = document.getElementById("clientNameInput").value;
@@ -39,8 +73,14 @@ document.addEventListener("DOMContentLoaded", () => {
       // Generate the link for the client
       const clientLink = `${window.location.origin}/client.html?clientName=${encodeURIComponent(clientName)}`;
       document.getElementById("clientLink").value = clientLink;
+
+      // Update the client list
+      updateClientList();
     });
   }
+
+  // Initial population of the client list
+  updateClientList();
 });
 
 // CLIENT PAGE
