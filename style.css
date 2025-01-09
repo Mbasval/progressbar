@@ -1,26 +1,24 @@
 body {
   font-family: Arial, sans-serif;
+  text-align: center;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 h1 {
-  margin: 20px 0;
+  margin-top: 20px;
 }
 
-form, #client-list {
-  width: 90%;
-  max-width: 600px;
-  margin: 20px 0;
+form, #client-list, .progress-container {
+  width: 80%;
+  margin: 20px auto;
 }
 
 input, button {
-  padding: 10px;
-  margin: 5px 0;
+  display: block;
   width: 100%;
+  margin: 10px 0;
+  padding: 10px;
 }
 
 button {
@@ -34,7 +32,7 @@ button:hover {
   background-color: #0056b3;
 }
 
-.client {
+#client-list .client {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -43,31 +41,8 @@ button:hover {
   margin-bottom: 10px;
 }
 
-.client-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.client-info p, a {
-  margin: 5px 0;
-}
-
-input[type="range"] {
-  width: 150px;
-}
-
-.progress-container {
-  width: 90%;
-  max-width: 600px;
-  height: 30px;
-  background-color: #f3f3f3;
-  border: 1px solid #ccc;
-  margin-top: 20px;
-}
-
 #progress-bar {
-  height: 100%;
+  height: 30px;
   background-color: #4caf50;
   width: 0;
 }
