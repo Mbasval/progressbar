@@ -1,45 +1,86 @@
+/* Global styles */
 body {
-  font-family: Arial, sans-serif;
-  margin: 20px;
-  background-color: #f4f4f9;
-  color: #333;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
 }
 
-h1 {
-  color: #222;
+/* Admin Page */
+#adminPage {
+    padding: 20px;
 }
 
-form, .progress-bar {
-  margin-top: 20px;
+#adminPage h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
 }
 
-.progress-bar {
-  width: 100%;
-  background-color: #e0e0e0;
-  border-radius: 5px;
-  position: relative;
-  margin-top: 20px;
+#clientList {
+    list-style: none;
+    padding: 0;
 }
 
-.progress {
-  height: 20px;
-  width: 0%;
-  background-color: #4caf50;
-  border-radius: 5px;
-  text-align: center;
-  color: white;
-  transition: width 0.3s;
+#clientList li {
+    background-color: #fff;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-button {
-  padding: 10px 15px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+.progressSlider {
+    width: 100%;
+    margin-top: 10px;
 }
 
-button:hover {
-  background-color: #0056b3;
+.progressLabel {
+    margin-top: 5px;
+    display: block;
+    font-size: 14px;
+}
+
+.deleteClientButton {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.deleteClientButton:hover {
+    background-color: darkred;
+}
+
+/* Client Page */
+#clientPage {
+    padding: 20px;
+}
+
+#clientPage h1 {
+    font-size: 24px;
+}
+
+#progressContainer {
+    background-color: #ddd;
+    border-radius: 25px;
+    height: 20px;
+    width: 100%;
+    margin-top: 20px;
+    position: relative;
+}
+
+#progressBar {
+    background-color: #4CAF50;
+    height: 100%;
+    width: 0%;
+    border-radius: 25px;
+    transition: width 0.5s ease;
+}
+
+#clientName, #clientDeadline {
+    font-size: 18px;
+    margin-top: 10px;
 }
