@@ -7,13 +7,16 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Project Progress</h1>
-  <div id="clientInfo">
-    <p><strong>Client Name:</strong> <span id="clientName">-</span></p>
-    <p><strong>Deadline:</strong> <span id="deadline">-</span></p>
-  </div>
-  <div class="progress-bar">
-    <div class="progress" id="progressBar">0%</div>
+  <h1>Client Progress</h1>
+
+  <div id="clientDetails">
+    <p><strong>Client Name:</strong> <span id="clientName"></span></p>
+    <p><strong>Deadline:</strong> <span id="deadline"></span></p>
+
+    <h2>Project Progress</h2>
+    <div id="progressBarContainer" style="width: 100%; background-color: #e0e0e0; border-radius: 8px;">
+      <div id="progressBar" style="width: 0%; background-color: #4caf50; text-align: center; padding: 10px; color: white; border-radius: 8px;">0%</div>
+    </div>
   </div>
 
   <script src="script.js"></script>
