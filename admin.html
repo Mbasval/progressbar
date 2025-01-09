@@ -3,40 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <!-- Add Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js"></script>
-    
-    <script>
-      // Firebase Configuration
-      const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_AUTH_DOMAIN",
-        databaseURL: "YOUR_DATABASE_URL",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_STORAGE_BUCKET",
-        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-        appId: "YOUR_APP_ID",
-      };
-
-      // Initialize Firebase
-      const app = firebase.initializeApp(firebaseConfig);
-      const database = firebase.database();
-    </script>
-    
-    <!-- Link to external CSS file -->
+    <title>Admin Page</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body id="adminPage">
     <h1>Admin Dashboard</h1>
+    <h2>Client Progress</h2>
+    <ul id="clientList">
+        <!-- List of clients will be dynamically populated here -->
+    </ul>
 
-    <div>
-        <h2>Client List</h2>
-        <ul id="clientList"></ul>
-    </div>
+    <!-- Firebase SDK Import -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
-    <!-- Link to external JS file -->
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCQDrZD_BGyXtvCJwhMNX0eOywLLObA-xo",
+            authDomain: "progress-bar-e1b94.firebaseapp.com",
+            projectId: "progress-bar-e1b94",
+            storageBucket: "progress-bar-e1b94.firebasestorage.app",
+            messagingSenderId: "1038468595103",
+            appId: "1:1038468595103:web:7f1a8291298c2b025f91aa"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Admin page logic (same as before)
+        function updateClientList(clientData) {
+            const clientList = document.getElementById("clientList");
+            clientList.innerHTML = '';  // Clear the list
+
+            for (const clientName in clientData) {
+                const client = clientData[clientName];
+                const listItem = document.createElement("li");
+
+                listItem.innerHTML = `
+                    <strong>${clientName}</strong> - Progress: 
+                    <input type="range" min="0" max="${client.steps}" value="${client.currentStep}" class="progressSlider" data-client="${clientName}">
+                    <span class="progressLabel">${client.currentStep} / ${client.steps}</span>
+                    <button class="deleteClientButton" data-client="${clientName}">Delete Client</button>
+                    <br><br>
+                    <input type="text" value="${window.location.origin}/client.html?clientName=${encodeURIComponent(clientName)}" readonly>
+                `;
+
+                // Event listener for progress slider
+                const progressSlider = listItem.querySelector(".progressSlider");
+                progressSlider.addEventListener("input", (e) => {
+                    const clientName = e.target.dataset.client;
+                    const newProgress = parseInt(e.target.value);
+                    clientData[clientName].currentStep = newProgress;
+                    saveClientDataToFirebase(clientData);  // Update in Firebase
+                    listItem.querySelector(".progressLabel").textContent = `${newProgress} / ${client.steps}`;
+                });
+
+                // Event listener for delete button
+                const deleteButton = listItem.querySelector(".deleteClientButton");
+                deleteButton.addEventListener("click", () => {
+                    delete clientData[clientName];
+                    saveClientDataToFirebase(clientData);  // Update Firebase after deletion
+                    updateClientList(clientData);  // Refresh the list
+                });
+
+                clientList.appendChild(listItem);
+            }
+        }
+
+        // Fetch clients from Firebase
+        function getClientDataFromFirebase() {
+            const clientRef = ref(database, "clients");
+            onValue(clientRef, (snapshot) => {
+                const clientData = snapshot.val();
+                updateClientList(clientData);  // Function to update your UI with the data
+            });
+        }
+
+        // Save client data to Firebase
+        function saveClientDataToFirebase(clientData) {
+            const clientRef = ref(database, "clients");
+            set(clientRef, clientData);
+        }
+
+        // Fetch client data when the page loads
+        window.onload = getClientDataFromFirebase;
+    </script>
+
     <script src="script.js"></script>
 </body>
 </html>
