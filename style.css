@@ -34,6 +34,29 @@ button:hover {
   background-color: #0056b3;
 }
 
+.client {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.client-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.client-info p, a {
+  margin: 5px 0;
+}
+
+input[type="range"] {
+  width: 150px;
+}
+
 .progress-container {
   width: 90%;
   max-width: 600px;
@@ -47,18 +70,4 @@ button:hover {
   height: 100%;
   background-color: #4caf50;
   width: 0;
-}
-
-#client-list div {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border: 1px solid #ccc;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
-#client-list button {
-  background-color: red;
-  color: white;
 }
