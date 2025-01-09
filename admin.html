@@ -1,31 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin - Manage Clients</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js"></script>
+    
+    <script>
+      // Firebase Configuration
+      const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_AUTH_DOMAIN",
+        databaseURL: "YOUR_DATABASE_URL",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_STORAGE_BUCKET",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID",
+      };
+
+      // Initialize Firebase
+      const app = firebase.initializeApp(firebaseConfig);
+      const database = firebase.database();
+    </script>
+    
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Admin Panel - Manage Clients</h1>
+    <h1>Admin Dashboard</h1>
 
-  <h2>Add New Client</h2>
-  <form>
-    <label for="clientNameInput">Client Name:</label>
-    <input type="text" id="clientNameInput" required><br>
+    <div>
+        <h2>Client List</h2>
+        <ul id="clientList"></ul>
+    </div>
 
-    <label for="deadlineInput">Deadline:</label>
-    <input type="date" id="deadlineInput" required><br>
-
-    <label for="stepsInput">Number of Steps:</label>
-    <input type="number" id="stepsInput" required min="1"><br><br>
-
-    <button type="button" id="addClientButton">Add Client</button>
-  </form>
-
-  <h2>Existing Clients</h2>
-  <ul id="clientList"></ul>
-
-  <script src="script.js"></script>
+    <!-- Link to external JS file -->
+    <script src="admin.js"></script>
 </body>
 </html>
