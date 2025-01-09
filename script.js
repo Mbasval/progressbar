@@ -1,105 +1,92 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+import { getDatabase, ref, set, get, update, remove } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
 // Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyCQDrZD_BGyXtvCJwhMNX0eOywLLObA-xo",
-    authDomain: "progress-bar-e1b94.firebaseapp.com",
-    databaseURL: "https://progress-bar-e1b94-default-rtdb.firebaseio.com",
-    projectId: "progress-bar-e1b94",
-    storageBucket: "progress-bar-e1b94.firebasestorage.app",
-    messagingSenderId: "1038468595103",
-    appId: "1:1038468595103:web:7f1a8291298c2b025f91aa"
+  apiKey: "AIzaSyCQDrZD_BGyXtvCJwhMNX0eOywLLObA-xo",
+  authDomain: "progress-bar-e1b94.firebaseapp.com",
+  projectId: "progress-bar-e1b94",
+  storageBucket: "progress-bar-e1b94.appspot.com",
+  messagingSenderId: "1038468595103",
+  appId: "1:1038468595103:web:7f1a8291298c2b025f91aa",
+  databaseURL: "https://progress-bar-e1b94-default-rtdb.firebaseio.com/"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+// DOM elements
+const clientForm = document.getElementById('add-client-form');
+const clientList = document.getElementById('client-list');
 
+// Add client
+clientForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = document.getElementById('client-name').value;
+  const steps = document.getElementById('steps').value;
+  const deadline = document.getElementById('deadline').value;
 
+  const clientId = Date.now(); // Unique ID for client
+  const link = `${window.location.origin}/client.html?id=${clientId}`;
+  
+  await set(ref(db, `clients/${clientId}`), {
+    name,
+    steps: parseInt(steps),
+    progress: 0,
+    deadline,
+    link
+  });
 
-
-
-
-
-// Add new client
-function addNewClient(clientId, name, deadline, totalSteps) {
-    const clientRef = ref(db, 'clients/' + clientId);
-    set(clientRef, {
-        name: name,
-        deadline: deadline,
-        totalSteps: totalSteps,
-        completedSteps: 0
-    })
-    .then(() => {
-        alert('Client added successfully!');
-        displayClients();
-    })
-    .catch((error) => {
-        console.error('Error adding client: ', error);
-    });
-}
-
-// Display clients in the list
-function displayClients() {
-    const clientsList = document.getElementById("clients-list");
-    get(ref(db, 'clients')).then((snapshot) => {
-        clientsList.innerHTML = ''; // Clear existing list
-        if (snapshot.exists()) {
-            const clients = snapshot.val();
-            for (const clientId in clients) {
-                const client = clients[clientId];
-                const li = document.createElement("li");
-                li.textContent = `${client.name} - Deadline: ${client.deadline}, Steps: ${client.totalSteps}`;
-                clientsList.appendChild(li);
-            }
-        } else {
-            clientsList.textContent = "No clients found.";
-        }
-    });
-}
-
-// Fetch client data based on client ID
-function fetchClientData(clientId) {
-    const clientRef = ref(db, 'clients/' + clientId);
-    get(clientRef)
-        .then((snapshot) => {
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                document.getElementById('client-name').textContent = data.name;
-                document.getElementById('client-deadline').textContent = data.deadline;
-                document.getElementById('steps-completed').textContent = data.completedSteps;
-
-                // Update progress bar
-                const progressBar = document.getElementById('progress-bar');
-                const progress = (data.completedSteps / data.totalSteps) * 100;
-                progressBar.style.width = progress + '%';
-            }
-        })
-        .catch((error) => {
-            console.error('Error fetching client data: ', error);
-        });
-}
-
-// Handle form submission to add a new client
-document.getElementById('client-form').addEventListener('submit', function(event) {
-    event.preventDefault();
-
-    const clientName = document.getElementById('client-name').value;
-    const clientDeadline = document.getElementById('client-deadline').value;
-    const clientSteps = document.getElementById('client-steps').value;
-    const clientId = `client_${Date.now()}`;
-
-    addNewClient(clientId, clientName, clientDeadline, clientSteps);
+  displayClients();
+  clientForm.reset();
 });
 
-// Initial display of clients
-displayClients();
+// Display clients
+async function displayClients() {
+  const snapshot = await get(ref(db, 'clients'));
+  const clients = snapshot.val();
+  clientList.innerHTML = '';
 
-// Client page logic
-const urlParams = new URLSearchParams(window.location.search);
-const clientId = urlParams.get('client');
-if (clientId) {
-    fetchClientData(clientId);
+  for (const id in clients) {
+    const { name, link, progress, steps } = clients[id];
+
+    const clientDiv = document.createElement('div');
+    clientDiv.innerHTML = `
+      <span>${name}</span>
+      <button onclick="deleteClient('${id}')">Delete</button>
+      <a href="${link}" target="_blank">View Progress</a>
+      <input type="range" min="0" max="${steps}" value="${progress}" onchange="updateProgress('${id}', this.value)">
+    `;
+    clientList.appendChild(clientDiv);
+  }
+}
+
+// Update progress
+async function updateProgress(clientId, value) {
+  await update(ref(db, `clients/${clientId}`), { progress: parseInt(value) });
+}
+
+// Delete client
+async function deleteClient(clientId) {
+  await remove(ref(db, `clients/${clientId}`));
+  displayClients();
+}
+
+// Load client progress for unique links
+if (window.location.pathname.includes('client.html')) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const clientId = urlParams.get('id');
+  
+  get(ref(db, `clients/${clientId}`)).then(snapshot => {
+    const data = snapshot.val();
+    document.getElementById('client-name').textContent = data.name;
+    document.getElementById('deadline').textContent = `Deadline: ${data.deadline}`;
+    document.getElementById('progress-bar').style.width = `${(data.progress / data.steps) * 100}%`;
+  });
+}
+
+// Initialize
+if (window.location.pathname.includes('admin.html')) {
+  displayClients();
 }
