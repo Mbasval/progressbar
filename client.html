@@ -1,25 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Client Progress</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Progress</title>
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js"></script>
+
+    <script>
+      // Firebase Configuration
+      const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_AUTH_DOMAIN",
+        databaseURL: "YOUR_DATABASE_URL",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_STORAGE_BUCKET",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID",
+      };
+
+      // Initialize Firebase
+      const app = firebase.initializeApp(firebaseConfig);
+      const database = firebase.database();
+    </script>
+    
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Client Progress</h1>
-
-  <div id="clientDetails">
-    <p><strong>Client Name:</strong> <span id="clientName"></span></p>
-    <p><strong>Deadline:</strong> <span id="deadline"></span></p>
-    <p><strong>Number of Steps:</strong> <span id="steps"></span></p>
-
-    <h2>Project Progress</h2>
-    <div id="progressBarContainer" style="width: 100%; background-color: #e0e0e0; border-radius: 8px;">
-      <div id="progressBar" style="width: 0%; background-color: #4caf50; text-align: center; padding: 10px; color: white; border-radius: 8px;">0%</div>
+    <h1 id="clientName">Client Name</h1>
+    <p id="clientDeadline">Deadline: </p>
+    <p>Progress:</p>
+    <div id="progressBarContainer">
+        <div id="progressBar"></div>
     </div>
-  </div>
 
-  <script src="script.js"></script>
+    <!-- Link to external JS file -->
+    <script src="client.js"></script>
 </body>
 </html>
