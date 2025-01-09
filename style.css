@@ -1,47 +1,59 @@
-/* General Body Styling */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
-    margin: 0;
-    padding: 0;
-}
-
-/* Admin Page Styling */
-#adminPage {
-    width: 60%;
-    margin: 0 auto;
     padding: 20px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-#adminPage h1 {
-    text-align: center;
+h1 {
     color: #333;
 }
 
-#clientList {
+form {
+    margin-bottom: 20px;
+}
+
+input {
+    margin-bottom: 10px;
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#progress-container {
+    width: 100%;
+    background-color: #f3f3f3;
+    border: 1px solid #ccc;
     margin-top: 20px;
-}
-
-/* Client Page Styling */
-#clientPage {
-    text-align: center;
-    padding: 20px;
-}
-
-#progressContainer {
-    width: 80%;
-    margin: 20px auto;
-    background-color: #ddd;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-#progressBar {
     height: 30px;
-    width: 0%;
-    background-color: #4caf50;
-    transition: width 0.5s;
+    border-radius: 5px;
+}
+
+#progress-bar {
+    width: 0;
+    height: 100%;
+    background-color: #4CAF50;
+    text-align: center;
+    line-height: 30px;
+    color: white;
+    border-radius: 5px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin: 5px 0;
 }
