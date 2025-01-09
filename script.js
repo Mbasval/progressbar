@@ -1,59 +1,69 @@
-let projectData = {
-  clientName: "",
-  deadline: "",
-  steps: 0,
-  currentStep: 0,
-};
+// Helper function to get stored data or initialize it
+function getClientsData() {
+  const storedData = localStorage.getItem("clientsData");
+  return storedData ? JSON.parse(storedData) : {};
+}
 
-// Save project details from the Admin page
+// Save data to localStorage
+function saveClientsData(data) {
+  localStorage.setItem("clientsData", JSON.stringify(data));
+}
+
+// ADMIN PAGE
 document.addEventListener("DOMContentLoaded", () => {
-  const saveProjectButton = document.getElementById("saveProject");
-  const nextStepButton = document.getElementById("nextStepButton");
+  const clientsData = getClientsData();
 
-  if (saveProjectButton) {
-    saveProjectButton.addEventListener("click", () => {
-      const clientNameInput = document.getElementById("clientNameInput").value;
-      const deadlineInput = document.getElementById("deadlineInput").value;
-      const stepsInput = parseInt(document.getElementById("stepsInput").value);
+  // Admin Page: Add a New Client
+  const addClientButton = document.getElementById("addClientButton");
+  if (addClientButton) {
+    addClientButton.addEventListener("click", () => {
+      const clientName = document.getElementById("clientNameInput").value;
+      const deadline = document.getElementById("deadlineInput").value;
+      const steps = parseInt(document.getElementById("stepsInput").value);
 
-      projectData.clientName = clientNameInput;
-      projectData.deadline = deadlineInput;
-      projectData.steps = stepsInput;
-      projectData.currentStep = 0;
-
-      localStorage.setItem("projectData", JSON.stringify(projectData));
-      alert("Project details saved!");
-    });
-  }
-
-  // Move to the next step
-  if (nextStepButton) {
-    nextStepButton.addEventListener("click", () => {
-      if (projectData.currentStep < projectData.steps) {
-        projectData.currentStep++;
-        localStorage.setItem("projectData", JSON.stringify(projectData));
-        alert(`Moved to step ${projectData.currentStep}`);
-      } else {
-        alert("All steps are already completed!");
+      if (!clientName || !deadline || steps < 1) {
+        alert("Please fill out all fields.");
+        return;
       }
+
+      // Create new client object
+      clientsData[clientName] = {
+        deadline,
+        steps,
+        currentStep: 0,
+      };
+
+      saveClientsData(clientsData);
+      alert(`Client "${clientName}" added!`);
+
+      // Generate the link for the client
+      const clientLink = `${window.location.origin}/client.html?clientName=${encodeURIComponent(clientName)}`;
+      document.getElementById("clientLink").value = clientLink;
     });
   }
+});
 
-  // Display progress on the Client page
-  const clientPage = document.getElementById("clientName");
-  if (clientPage) {
-    const storedData = localStorage.getItem("projectData");
-    if (storedData) {
-      projectData = JSON.parse(storedData);
+// CLIENT PAGE
+document.addEventListener("DOMContentLoaded", () => {
+  const storedData = getClientsData();
+  
+  // Get the client name from the URL query string
+  const urlParams = new URLSearchParams(window.location.search);
+  const clientName = urlParams.get('clientName');
 
-      document.getElementById("clientName").textContent = projectData.clientName;
-      document.getElementById("deadline").textContent = projectData.deadline;
+  if (clientName && storedData[clientName]) {
+    const client = storedData[clientName];
+    
+    // Display client data
+    document.getElementById("clientName").textContent = clientName;
+    document.getElementById("deadline").textContent = client.deadline;
 
-      const progressBar = document.getElementById("progressBar");
-      const progressPercentage =
-        (projectData.currentStep / projectData.steps) * 100 || 0;
-      progressBar.style.width = `${progressPercentage}%`;
-      progressBar.textContent = `${Math.round(progressPercentage)}%`;
-    }
+    // Update progress bar based on the steps completed
+    const progressBar = document.getElementById("progressBar");
+    const progressPercentage = (client.currentStep / client.steps) * 100 || 0;
+    progressBar.style.width = `${progressPercentage}%`;
+    progressBar.textContent = `${Math.round(progressPercentage)}%`;
+  } else {
+    alert("Client data not found.");
   }
 });
