@@ -3,18 +3,25 @@ import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/fireb
 
 // Firebase configuration
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyCQDrZD_BGyXtvCJwhMNX0eOywLLObA-xo",
+    authDomain: "progress-bar-e1b94.firebaseapp.com",
+    databaseURL: "https://progress-bar-e1b94-default-rtdb.firebaseio.com",
+    projectId: "progress-bar-e1b94",
+    storageBucket: "progress-bar-e1b94.firebasestorage.app",
+    messagingSenderId: "1038468595103",
+    appId: "1:1038468595103:web:7f1a8291298c2b025f91aa"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+
+
+
+
+
+
+
 
 // Add new client
 function addNewClient(clientId, name, deadline, totalSteps) {
