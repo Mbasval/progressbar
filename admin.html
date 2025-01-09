@@ -3,41 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel</title>
+  <title>Admin - Manage Clients</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Admin Panel</h1>
+  <h1>Admin Panel - Manage Clients</h1>
 
-  <!-- Add new client -->
-  <form id="adminForm">
+  <h2>Add New Client</h2>
+  <form>
     <label for="clientNameInput">Client Name:</label>
-    <input type="text" id="clientNameInput" required>
-    <br><br>
+    <input type="text" id="clientNameInput" required><br>
 
     <label for="deadlineInput">Deadline:</label>
-    <input type="date" id="deadlineInput" required>
-    <br><br>
+    <input type="date" id="deadlineInput" required><br>
 
     <label for="stepsInput">Number of Steps:</label>
-    <input type="number" id="stepsInput" min="1" required>
-    <br><br>
+    <input type="number" id="stepsInput" required min="1"><br><br>
 
     <button type="button" id="addClientButton">Add Client</button>
   </form>
 
-  <hr>
-
-  <!-- Client List Section -->
-  <h2>Manage Clients</h2>
+  <h2>Existing Clients</h2>
   <ul id="clientList"></ul>
-
-  <hr>
-
-  <div id="generatedLink">
-    <p>Generated Client Link:</p>
-    <input type="text" id="clientLink" readonly>
-  </div>
 
   <script src="script.js"></script>
 </body>
