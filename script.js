@@ -1,78 +1,131 @@
-// Admin Side Logic
-const clientList = document.getElementById("clientList");
-const database = getDatabase(app);
+// Firebase initialization
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+import { getDatabase, ref, set, get, update, remove } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
-// Function to update the client list in Admin page
-function updateClientList(clientData) {
-    clientList.innerHTML = '';  // Clear the list
+// Firebase config
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
 
-    for (const clientName in clientData) {
-        const client = clientData[clientName];
-        const listItem = document.createElement("li");
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-        listItem.innerHTML = `
-            <strong>${clientName}</strong> - Progress: 
-            <input type="range" min="0" max="${client.steps}" value="${client.currentStep}" class="progressSlider" data-client="${clientName}">
-            <span class="progressLabel">${client.currentStep} / ${client.steps}</span>
-            <button class="deleteClientButton" data-client="${clientName}">Delete Client</button>
-            <br><br>
-            <input type="text" value="${window.location.origin}/client.html?clientName=${encodeURIComponent(clientName)}" readonly>
-        `;
+// --- Admin-side logic ---
 
-        // Event listener for progress slider
-        const progressSlider = listItem.querySelector(".progressSlider");
-        progressSlider.addEventListener("input", (e) => {
-            const clientName = e.target.dataset.client;
-            const newProgress = parseInt(e.target.value);
-            clientData[clientName].currentStep = newProgress;
-            saveClientDataToFirebase(clientData);  // Update in Firebase
-            listItem.querySelector(".progressLabel").textContent = `${newProgress} / ${client.steps}`;
+// Add client
+document.getElementById("addClientBtn").addEventListener("click", function () {
+    const clientName = document.getElementById("clientName").value;
+    const clientDeadline = document.getElementById("clientDeadline").value;
+    const steps = document.getElementById("steps").value;
+    
+    if (clientName && clientDeadline && steps) {
+        const clientRef = ref(db, 'clients/' + clientName);
+        set(clientRef, {
+            name: clientName,
+            deadline: clientDeadline,
+            steps: steps,
+            progress: 0,
+            link: generateClientLink(clientName)
+        }).then(() => {
+            alert('Client added successfully!');
+            displayClients(); // Update the client list
+        }).catch((error) => {
+            console.error(error);
+            alert('Error adding client!');
         });
-
-        // Event listener for delete button
-        const deleteButton = listItem.querySelector(".deleteClientButton");
-        deleteButton.addEventListener("click", () => {
-            delete clientData[clientName];
-            saveClientDataToFirebase(clientData);  // Update Firebase after deletion
-            updateClientList(clientData);  // Refresh the list
-        });
-
-        clientList.appendChild(listItem);
-    }
-}
-
-// Fetch clients from Firebase
-function getClientDataFromFirebase() {
-    const clientRef = ref(database, "clients");
-    onValue(clientRef, (snapshot) => {
-        const clientData = snapshot.val();
-        updateClientList(clientData);  // Function to update your UI with the data
-    });
-}
-
-// Save client data to Firebase
-function saveClientDataToFirebase(clientData) {
-    const clientRef = ref(database, "clients");
-    set(clientRef, clientData);
-}
-
-// Client Side Logic
-const urlParams = new URLSearchParams(window.location.search);
-const clientName = urlParams.get('clientName');
-
-// Fetch the client data from Firebase using the clientName
-const clientRef = ref(database, `clients/${clientName}`);
-onValue(clientRef, (snapshot) => {
-    const clientData = snapshot.val();
-    if (clientData) {
-        document.getElementById('clientName').textContent = clientData.name;
-        document.getElementById('clientDeadline').textContent = `Deadline: ${clientData.deadline}`;
-        updateProgressBar(clientData.currentStep, clientData.steps);
+    } else {
+        alert('Please fill in all fields!');
     }
 });
 
-// Function to update the progress bar
-function updateProgressBar(currentStep, totalSteps) {
-    const progress = (currentStep / totalSteps) * 100;
-    document.getElementById('progressBar').style.width = progress + '%';
+// Generate unique client link (just for display purposes in the admin)
+function generateClientLink(clientName) {
+    return `${window.location.origin}/client.html?client=${clientName}`;
+}
+
+// Display all clients in the admin panel
+function displayClients() {
+    const clientsRef = ref(db, 'clients/');
+    get(clientsRef).then((snapshot) => {
+        const clientList = document.getElementById('clientList');
+        clientList.innerHTML = ''; // Clear the list before updating
+        snapshot.forEach((childSnapshot) => {
+            const clientData = childSnapshot.val();
+            const clientDiv = document.createElement('div');
+            clientDiv.innerHTML = `
+                <p>${clientData.name} - ${clientData.deadline}</p>
+                <p>Link: <a href="${clientData.link}" target="_blank">${clientData.link}</a></p>
+                <button onclick="updateProgress('${clientData.name}')">Update Progress</button>
+                <button onclick="deleteClient('${clientData.name}')">Delete Client</button>
+            `;
+            clientList.appendChild(clientDiv);
+        });
+    });
+}
+
+// Update client progress
+function updateProgress(clientName) {
+    const clientRef = ref(db, 'clients/' + clientName);
+    get(clientRef).then((snapshot) => {
+        const clientData = snapshot.val();
+        const newProgress = clientData.progress + 1;
+
+        // Update the progress
+        update(clientRef, { progress: newProgress }).then(() => {
+            alert(`Progress for ${clientName} updated!`);
+            // Optionally: Call displayClients() here to refresh the list (if needed)
+        }).catch((error) => {
+            console.error(error);
+        });
+    });
+}
+
+// Delete client
+function deleteClient(clientName) {
+    const clientRef = ref(db, 'clients/' + clientName);
+    remove(clientRef).then(() => {
+        alert(`Client ${clientName} deleted!`);
+        displayClients(); // Update the client list after deletion
+    }).catch((error) => {
+        console.error(error);
+    });
+}
+
+// Call displayClients to load the list on page load
+window.onload = displayClients;
+
+// --- Client-side logic ---
+
+// Get client name from URL and display progress
+const urlParams = new URLSearchParams(window.location.search);
+const clientName = urlParams.get('client');
+
+if (clientName) {
+    const clientRef = ref(db, 'clients/' + clientName);
+    get(clientRef).then((snapshot) => {
+        const clientData = snapshot.val();
+        if (clientData) {
+            // Display client name and deadline
+            document.getElementById("clientName").textContent = clientData.name;
+            document.getElementById("clientDeadline").textContent = `Deadline: ${clientData.deadline}`;
+
+            // Set the progress bar width
+            const progressPercent = (clientData.progress / clientData.steps) * 100;
+            document.getElementById("progressBar").style.width = `${progressPercent}%`;
+        } else {
+            alert('Client not found!');
+        }
+    }).catch((error) => {
+        console.error(error);
+        alert('Error fetching client data!');
+    });
+} else {
+    alert('No client specified!');
 }
