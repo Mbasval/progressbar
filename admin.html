@@ -4,35 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Page</title>
+
+    <!-- Firebase CDN scripts -->
+    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js"></script>
+
+    <!-- Link to CSS file -->
     <link rel="stylesheet" href="style.css">
 </head>
-<body id="adminPage">
-    <h1>Admin Dashboard</h1>
-    <h2>Client Progress</h2>
-    <ul id="clientList">
-        <!-- List of clients will be dynamically populated here -->
-    </ul>
+<body>
+    <div id="adminPage">
+        <h1>Admin Panel</h1>
+        <div>
+            <input type="text" id="clientName" placeholder="Client Name">
+            <input type="text" id="clientDeadline" placeholder="Deadline">
+            <input type="number" id="steps" placeholder="Number of Steps">
+            <button id="addClientBtn">Add Client</button>
+        </div>
+        <div id="clientList"></div>
+    </div>
 
-    <!-- Firebase SDK Import -->
-    <script type="module">
-        // Firebase Initialization
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCQDrZD_BGyXtvCJwhMNX0eOywLLObA-xo",
-            authDomain: "progress-bar-e1b94.firebaseapp.com",
-            projectId: "progress-bar-e1b94",
-            storageBucket: "progress-bar-e1b94.firebasestorage.app",
-            messagingSenderId: "1038468595103",
-            appId: "1:1038468595103:web:7f1a8291298c2b025f91aa"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-    </script>
-
-    <!-- Link to your external script.js file -->
+    <!-- Link to JS file -->
     <script src="script.js"></script>
 </body>
 </html>
