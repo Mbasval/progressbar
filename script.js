@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-import { getDatabase, ref, set, get, update, remove } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+import { getDatabase, ref, set, get, update, remove, onValue } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -20,14 +20,14 @@ const db = getDatabase(app);
 const clientForm = document.getElementById('add-client-form');
 const clientList = document.getElementById('client-list');
 
-// Add client
+// Add a client
 clientForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const name = document.getElementById('client-name').value;
   const steps = document.getElementById('steps').value;
   const deadline = document.getElementById('deadline').value;
 
-  const clientId = Date.now(); // Unique ID for client
+  const clientId = Date.now(); // Unique client ID
   const link = `${window.location.origin}/client.html?id=${clientId}`;
   
   await set(ref(db, `clients/${clientId}`), {
@@ -38,55 +38,78 @@ clientForm.addEventListener('submit', async (e) => {
     link
   });
 
-  displayClients();
   clientForm.reset();
+  displayClients();
 });
 
-// Display clients
-async function displayClients() {
-  const snapshot = await get(ref(db, 'clients'));
-  const clients = snapshot.val();
-  clientList.innerHTML = '';
+// Display all clients
+function displayClients() {
+  const clientsRef = ref(db, 'clients');
+  onValue(clientsRef, (snapshot) => {
+    const clients = snapshot.val();
+    clientList.innerHTML = ''; // Clear previous list
 
-  for (const id in clients) {
-    const { name, link, progress, steps } = clients[id];
+    if (clients) {
+      for (const id in clients) {
+        const { name, link, progress, steps, deadline } = clients[id];
 
-    const clientDiv = document.createElement('div');
-    clientDiv.innerHTML = `
-      <span>${name}</span>
-      <button onclick="deleteClient('${id}')">Delete</button>
-      <a href="${link}" target="_blank">View Progress</a>
-      <input type="range" min="0" max="${steps}" value="${progress}" onchange="updateProgress('${id}', this.value)">
-    `;
-    clientList.appendChild(clientDiv);
-  }
+        const clientDiv = document.createElement('div');
+        clientDiv.classList.add('client');
+
+        clientDiv.innerHTML = `
+          <div class="client-info">
+            <strong>${name}</strong>
+            <p>Deadline: ${deadline}</p>
+            <a href="${link}" target="_blank">View Progress</a>
+          </div>
+          <div class="client-controls">
+            <input type="range" min="0" max="${steps}" value="${progress}" onchange="updateProgress('${id}', this.value)">
+            <span>${progress}/${steps}</span>
+            <button onclick="deleteClient('${id}')">Delete</button>
+          </div>
+        `;
+        clientList.appendChild(clientDiv);
+      }
+    } else {
+      clientList.innerHTML = '<p>No clients added yet.</p>';
+    }
+  });
 }
 
 // Update progress
-async function updateProgress(clientId, value) {
-  await update(ref(db, `clients/${clientId}`), { progress: parseInt(value) });
-}
-
-// Delete client
-async function deleteClient(clientId) {
-  await remove(ref(db, `clients/${clientId}`));
+window.updateProgress = async function(clientId, value) {
+  const clientRef = ref(db, `clients/${clientId}`);
+  await update(clientRef, { progress: parseInt(value) });
   displayClients();
-}
+};
+
+// Delete a client
+window.deleteClient = async function(clientId) {
+  const clientRef = ref(db, `clients/${clientId}`);
+  await remove(clientRef);
+  displayClients();
+};
 
 // Load client progress for unique links
 if (window.location.pathname.includes('client.html')) {
   const urlParams = new URLSearchParams(window.location.search);
   const clientId = urlParams.get('id');
   
-  get(ref(db, `clients/${clientId}`)).then(snapshot => {
+  const clientRef = ref(db, `clients/${clientId}`);
+  get(clientRef).then(snapshot => {
     const data = snapshot.val();
-    document.getElementById('client-name').textContent = data.name;
-    document.getElementById('deadline').textContent = `Deadline: ${data.deadline}`;
-    document.getElementById('progress-bar').style.width = `${(data.progress / data.steps) * 100}%`;
+    if (data) {
+      document.getElementById('client-name').textContent = data.name;
+      document.getElementById('deadline').textContent = `Deadline: ${data.deadline}`;
+      const progressBar = document.getElementById('progress-bar');
+      progressBar.style.width = `${(data.progress / data.steps) * 100}%`;
+    } else {
+      document.body.innerHTML = '<h1>Client not found</h1>';
+    }
   });
 }
 
-// Initialize
+// Initialize displayClients for Admin Page
 if (window.location.pathname.includes('admin.html')) {
   displayClients();
 }
