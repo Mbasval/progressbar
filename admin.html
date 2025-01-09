@@ -3,28 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Page</title>
-
-    <!-- Firebase CDN scripts -->
-    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js"></script>
-
-    <!-- Link to CSS file -->
+    <title>Admin Panel</title>
     <link rel="stylesheet" href="style.css">
+    <script type="module" src="script.js" defer></script>
 </head>
 <body>
-    <div id="adminPage">
-        <h1>Admin Panel</h1>
-        <div>
-            <input type="text" id="clientName" placeholder="Client Name">
-            <input type="text" id="clientDeadline" placeholder="Deadline">
-            <input type="number" id="steps" placeholder="Number of Steps">
-            <button id="addClientBtn">Add Client</button>
-        </div>
-        <div id="clientList"></div>
-    </div>
+    <h1>Admin Panel</h1>
+    <form id="client-form">
+        <label for="client-name">Client Name:</label>
+        <input type="text" id="client-name" required>
 
-    <!-- Link to JS file -->
-    <script src="script.js"></script>
+        <label for="client-deadline">Deadline:</label>
+        <input type="date" id="client-deadline" required>
+
+        <label for="client-steps">Total Steps:</label>
+        <input type="number" id="client-steps" required>
+
+        <button type="submit">Add Client</button>
+    </form>
+
+    <div>
+        <h2>Clients List</h2>
+        <ul id="clients-list"></ul>
+    </div>
 </body>
 </html>
