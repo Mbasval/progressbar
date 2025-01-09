@@ -1,30 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
-    <link rel="stylesheet" href="style.css">
-    <script type="module" src="script.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
 </head>
 <body>
-    <h1>Admin Panel</h1>
-    <form id="client-form">
-        <label for="client-name">Client Name:</label>
-        <input type="text" id="client-name" required>
+  <h1>Admin Panel</h1>
+  <form id="add-client-form">
+    <input type="text" id="client-name" placeholder="Client Name" required>
+    <input type="number" id="steps" placeholder="Number of Steps" required>
+    <input type="date" id="deadline" placeholder="Deadline" required>
+    <button type="submit">Add Client</button>
+  </form>
 
-        <label for="client-deadline">Deadline:</label>
-        <input type="date" id="client-deadline" required>
-
-        <label for="client-steps">Total Steps:</label>
-        <input type="number" id="client-steps" required>
-
-        <button type="submit">Add Client</button>
-    </form>
-
-    <div>
-        <h2>Clients List</h2>
-        <ul id="clients-list"></ul>
-    </div>
+  <h2>Client List</h2>
+  <div id="client-list"></div>
 </body>
 </html>
