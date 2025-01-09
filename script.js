@@ -1,134 +1,59 @@
-// Example project data
-const projectData = {
-  clientName: "John Doe",
-  projectName: "Website Redesign",
-  deadline: "2025-01-31",
-  steps: [
-    { name: "Initial Meeting", completed: true },
-    { name: "Wireframe Design", completed: true },
-    { name: "Prototype Development", completed: false },
-    { name: "Final Review", completed: false },
-    { name: "Deployment", completed: false },
-  ],
-  progress: 40, // Progress starts at 40% (based on completed steps)
+let projectData = {
+  clientName: "",
+  deadline: "",
+  steps: 0,
+  currentStep: 0,
 };
 
-// Display project details and progress
-function displayProject(data) {
-  const container = document.getElementById("projectContainer");
-
-  container.innerHTML = `
-    <h2>Client: ${data.clientName}</h2>
-    <p>Project: ${data.projectName}</p>
-    <p>Deadline: ${data.deadline}</p>
-    <div class="progress-bar">
-      <div class="progress" style="width: ${data.progress}%;">${data.progress}%</div>
-    </div>
-    <h3>Steps</h3>
-    <ul>
-      ${data.steps
-        .map(
-          (step) =>
-            `<li style="text-decoration: ${step.completed ? "line-through" : "none"};">
-              ${step.name}
-            </li>`
-        )
-        .join("")}
-    </ul>
-  `;
-}
-
-// Update project progress
-function updateProgress(data) {
-  const completedSteps = data.steps.filter((step) => step.completed).length;
-  data.progress = Math.round((completedSteps / data.steps.length) * 100);
-  displayProject(data);
-}
-
-// Move to the next step
-function moveToNextStep(data) {
-  const nextStep = data.steps.find((step) => !step.completed);
-  if (nextStep) {
-    if (confirm(`Do you want to mark "${nextStep.name}" as completed?`)) {
-      nextStep.completed = true;
-      updateProgress(data);
-    }
-  } else {
-    alert("All steps are already completed!");
-  }
-}
-
-// Initial setup
+// Save project details from the Admin page
 document.addEventListener("DOMContentLoaded", () => {
-  displayProject(projectData);
-
+  const saveProjectButton = document.getElementById("saveProject");
   const nextStepButton = document.getElementById("nextStepButton");
-  nextStepButton.addEventListener("click", () => moveToNextStep(projectData));
-});
-// Example project data
-const projectData = {
-  clientName: "John Doe",
-  projectName: "Website Redesign",
-  deadline: "2025-01-31",
-  steps: [
-    { name: "Initial Meeting", completed: true },
-    { name: "Wireframe Design", completed: true },
-    { name: "Prototype Development", completed: false },
-    { name: "Final Review", completed: false },
-    { name: "Deployment", completed: false },
-  ],
-  progress: 40, // Progress starts at 40% (based on completed steps)
-};
 
-// Display project details and progress
-function displayProject(data) {
-  const container = document.getElementById("projectContainer");
+  if (saveProjectButton) {
+    saveProjectButton.addEventListener("click", () => {
+      const clientNameInput = document.getElementById("clientNameInput").value;
+      const deadlineInput = document.getElementById("deadlineInput").value;
+      const stepsInput = parseInt(document.getElementById("stepsInput").value);
 
-  container.innerHTML = `
-    <h2>Client: ${data.clientName}</h2>
-    <p>Project: ${data.projectName}</p>
-    <p>Deadline: ${data.deadline}</p>
-    <div class="progress-bar">
-      <div class="progress" style="width: ${data.progress}%;">${data.progress}%</div>
-    </div>
-    <h3>Steps</h3>
-    <ul>
-      ${data.steps
-        .map(
-          (step) =>
-            `<li style="text-decoration: ${step.completed ? "line-through" : "none"};">
-              ${step.name}
-            </li>`
-        )
-        .join("")}
-    </ul>
-  `;
-}
+      projectData.clientName = clientNameInput;
+      projectData.deadline = deadlineInput;
+      projectData.steps = stepsInput;
+      projectData.currentStep = 0;
 
-// Update project progress
-function updateProgress(data) {
-  const completedSteps = data.steps.filter((step) => step.completed).length;
-  data.progress = Math.round((completedSteps / data.steps.length) * 100);
-  displayProject(data);
-}
-
-// Move to the next step
-function moveToNextStep(data) {
-  const nextStep = data.steps.find((step) => !step.completed);
-  if (nextStep) {
-    if (confirm(`Do you want to mark "${nextStep.name}" as completed?`)) {
-      nextStep.completed = true;
-      updateProgress(data);
-    }
-  } else {
-    alert("All steps are already completed!");
+      localStorage.setItem("projectData", JSON.stringify(projectData));
+      alert("Project details saved!");
+    });
   }
-}
 
-// Initial setup
-document.addEventListener("DOMContentLoaded", () => {
-  displayProject(projectData);
+  // Move to the next step
+  if (nextStepButton) {
+    nextStepButton.addEventListener("click", () => {
+      if (projectData.currentStep < projectData.steps) {
+        projectData.currentStep++;
+        localStorage.setItem("projectData", JSON.stringify(projectData));
+        alert(`Moved to step ${projectData.currentStep}`);
+      } else {
+        alert("All steps are already completed!");
+      }
+    });
+  }
 
-  const nextStepButton = document.getElementById("nextStepButton");
-  nextStepButton.addEventListener("click", () => moveToNextStep(projectData));
+  // Display progress on the Client page
+  const clientPage = document.getElementById("clientName");
+  if (clientPage) {
+    const storedData = localStorage.getItem("projectData");
+    if (storedData) {
+      projectData = JSON.parse(storedData);
+
+      document.getElementById("clientName").textContent = projectData.clientName;
+      document.getElementById("deadline").textContent = projectData.deadline;
+
+      const progressBar = document.getElementById("progressBar");
+      const progressPercentage =
+        (projectData.currentStep / projectData.steps) * 100 || 0;
+      progressBar.style.width = `${progressPercentage}%`;
+      progressBar.textContent = `${Math.round(progressPercentage)}%`;
+    }
+  }
 });
