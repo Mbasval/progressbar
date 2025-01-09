@@ -80,10 +80,6 @@ document.addEventListener("DOMContentLoaded", () => {
       saveClientsData(clientsData);
       alert(`Client "${clientName}" added!`);
 
-      // Generate the link for the client
-      const clientLink = `${window.location.origin}/client.html?clientName=${encodeURIComponent(clientName)}`;
-      document.getElementById("clientLink").value = clientLink;
-
       // Update the client list
       updateClientList();
     });
@@ -91,30 +87,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initial population of the client list
   updateClientList();
-});
-
-// CLIENT PAGE
-document.addEventListener("DOMContentLoaded", () => {
-  const storedData = getClientsData();
-
-  // Get the client name from the URL query string
-  const urlParams = new URLSearchParams(window.location.search);
-  const clientName = urlParams.get('clientName');
-
-  if (clientName && storedData[clientName]) {
-    const client = storedData[clientName];
-
-    // Display client data
-    document.getElementById("clientName").textContent = clientName;
-    document.getElementById("deadline").textContent = client.deadline;
-    document.getElementById("steps").textContent = client.steps;
-
-    // Update progress bar based on the steps completed
-    const progressBar = document.getElementById("progressBar");
-    const progressPercentage = (client.currentStep / client.steps) * 100 || 0;
-    progressBar.style.width = `${progressPercentage}%`;
-    progressBar.textContent = `${Math.round(progressPercentage)}%`;
-  } else {
-    alert("Client data not found.");
-  }
 });
