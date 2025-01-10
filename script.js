@@ -37,7 +37,7 @@ if (isAdminPage) {
       stepDetails.push({ name: stepName, description: stepDescription });
     }
 
-    const clientId = Date.now().toString();
+    const clientId = `${name.replace(/\s+/g, '-').toLowerCase()}-${Date.now().toString()}`;
     const clientLink = `${window.location.origin}/client.html?id=${clientId}`;
 
     await set(ref(db, `clients/${clientId}`), {
@@ -78,17 +78,18 @@ if (isAdminPage) {
       clientList.innerHTML = ""; // Clear list
       if (clients) {
         Object.keys(clients).forEach((id) => {
-          const { name, progress, steps, link } = clients[id];
+          const { name, progress, steps, link, deadline } = clients[id];
           const clientDiv = document.createElement("div");
-          clientDiv.classList.add("client");
+          clientDiv.classList.add("client-card");
           clientDiv.innerHTML = `
             <div>
               <h3>${name}</h3>
+              <p>Deadline: ${deadline}</p>
+              <p>Progress: ${progress}/${steps}</p>
               <a href="${link}" target="_blank">View Progress</a>
             </div>
             <div>
               <input type="range" min="0" max="${steps}" value="${progress}" onchange="updateProgress('${id}', this.value)" class="slider">
-              <span>${progress}/${steps}</span>
               <button onclick="deleteClient('${id}')">Delete</button>
             </div>
           `;
@@ -141,7 +142,7 @@ if (isClientPage) {
         milestone.style.top = "0";
         milestone.style.height = "100%";
         milestone.style.width = "2px";
-        milestone.style.backgroundColor = progress >= i ? "#ffc300" : "#ed217c";
+        milestone.style.backgroundColor = progress >= i ? "#007bff" : "#ccc";
         milestonesContainer.appendChild(milestone);
       }
 
@@ -150,7 +151,7 @@ if (isClientPage) {
       const reportContainer = document.createElement("div");
       reportContainer.classList.add("report-container");
 
-      const currentStep = stepDetails[progress];
+      const currentStep = stepDetails[progress] || { name: "All steps complete", description: "Great job!" };
       const stepReport = document.createElement("div");
       stepReport.classList.add("step-report");
       stepReport.innerHTML = `
