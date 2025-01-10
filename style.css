@@ -1,11 +1,13 @@
+/* General Styles */
 body {
   font-family: 'Inter', sans-serif;
   margin: 0;
   padding: 0;
-  color: #ffffff;
   background-color: #000814;
+  color: #ffffff;
 }
 
+/* Header */
 header {
   background-color: #1a1a2e;
   padding: 20px;
@@ -18,12 +20,17 @@ header h1 {
   margin: 0;
 }
 
+/* Main Content */
 main {
   max-width: 900px;
   margin: 20px auto;
   padding: 20px;
+  background-color: #1a1a2e;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* Form Styles */
 form {
   background-color: #1a1a2e;
   padding: 20px;
@@ -57,46 +64,47 @@ form button:hover {
   color: white;
 }
 
+/* Progress Bar */
 .progress-container {
   margin: 20px 0;
   position: relative;
   background-color: #1a1a2e;
-  height: 25px;
-  border-radius: 5px;
+  height: 35px;
+  border-radius: 10px;
   overflow: hidden;
+  box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 #progress-bar {
   height: 100%;
-  background-color: #ffc300;
+  background: linear-gradient(90deg, #ffc300, #ed217c);
   width: 0;
   transition: width 0.5s ease-in-out;
   text-align: center;
   color: #000814;
   font-weight: bold;
+  line-height: 35px;
 }
 
-#milestones {
+.milestones-container {
   position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none;
 }
 
-#milestones div {
+.milestones-container .milestone {
+  width: 2px;
+  background-color: white;
   position: absolute;
   top: 0;
-  bottom: 0;
-  width: 3px;
-  background-color: #ed217c;
+  height: 100%;
 }
 
+/* Report Section */
 .report-container {
+  margin-top: 20px;
   background-color: #1a1a2e;
   padding: 20px;
-  margin-top: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
@@ -117,6 +125,7 @@ form button:hover {
   color: #ffffff;
 }
 
+/* Client Section */
 .client {
   background-color: #1a1a2e;
   padding: 15px;
@@ -150,6 +159,7 @@ form button:hover {
   color: #000814;
 }
 
+/* Tooltip */
 .tooltip {
   position: absolute;
   background-color: #1a1a2e;
@@ -160,6 +170,7 @@ form button:hover {
   z-index: 1000;
 }
 
+/* Responsive Design */
 @media (max-width: 768px) {
   header h1 {
     font-size: 1.5rem;
@@ -178,7 +189,7 @@ form button:hover {
   }
 
   .progress-container {
-    height: 20px;
+    height: 30px;
   }
 
   .report-container {
