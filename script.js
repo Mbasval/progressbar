@@ -127,17 +127,38 @@ if (isClientPage) {
       progressBar.style.width = `${(progress / steps) * 100}%`;
       progressBar.innerHTML = `<span id='progress-text'>${Math.round((progress / steps) * 100)}%</span>`;
 
+      const milestonesContainer = document.createElement("div");
+      milestonesContainer.classList.add("milestones-container");
+      milestonesContainer.style.position = "absolute";
+      milestonesContainer.style.width = "100%";
+      milestonesContainer.style.height = "100%";
+
+      for (let i = 1; i <= steps; i++) {
+        const milestone = document.createElement("div");
+        milestone.classList.add("milestone");
+        milestone.style.position = "absolute";
+        milestone.style.left = `${(i / steps) * 100}%`;
+        milestone.style.top = "0";
+        milestone.style.height = "100%";
+        milestone.style.width = "2px";
+        milestone.style.backgroundColor = progress >= i ? "#ffc300" : "#ed217c";
+        milestonesContainer.appendChild(milestone);
+      }
+
+      progressBar.appendChild(milestonesContainer);
+
       const reportContainer = document.createElement("div");
       reportContainer.classList.add("report-container");
-      stepDetails.forEach((step, index) => {
-        const stepReport = document.createElement("div");
-        stepReport.classList.add("step-report");
-        stepReport.innerHTML = `
-          <h3>Step ${index + 1}: ${step.name}</h3>
-          <p>${step.description}</p>
-        `;
-        reportContainer.appendChild(stepReport);
-      });
+
+      const currentStep = stepDetails[progress];
+      const stepReport = document.createElement("div");
+      stepReport.classList.add("step-report");
+      stepReport.innerHTML = `
+        <h3>Current Step: ${currentStep.name}</h3>
+        <p>${currentStep.description}</p>
+      `;
+
+      reportContainer.appendChild(stepReport);
       document.querySelector("main").appendChild(reportContainer);
     } else {
       document.body.innerHTML = "<h1>Client not found</h1>";
