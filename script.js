@@ -1,34 +1,35 @@
+/* Full Script.js */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
 import { getDatabase, ref, set, get, update, remove, onValue } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
 // Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyCQDrZD_BGyXtvCJwhMNX0eOywLLObA-xo",
-    authDomain: "progress-bar-e1b94.firebaseapp.com",
-    databaseURL: "https://progress-bar-e1b94-default-rtdb.firebaseio.com",
-    projectId: "progress-bar-e1b94",
-    storageBucket: "progress-bar-e1b94.firebasestorage.app",
-    messagingSenderId: "1038468595103",
-    appId: "1:1038468595103:web:7f1a8291298c2b025f91aa"
+  apiKey: "your-api-key",
+  authDomain: "your-auth-domain",
+  databaseURL: "your-database-url",
+  projectId: "your-project-id",
+  storageBucket: "your-storage-bucket",
+  messagingSenderId: "your-messaging-sender-id",
+  appId: "your-app-id",
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-const isAdminPage = window.location.pathname.includes('admin.html');
-const isClientPage = window.location.pathname.includes('client.html');
+const isAdminPage = window.location.pathname.includes("admin.html");
+const isClientPage = window.location.pathname.includes("client.html");
 
 // Add client (Admin Page)
 if (isAdminPage) {
-  const clientForm = document.getElementById('add-client-form');
-  const clientList = document.getElementById('client-list');
+  const clientForm = document.getElementById("add-client-form");
+  const clientList = document.getElementById("client-list");
 
-  clientForm.addEventListener('submit', async (e) => {
+  clientForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const name = document.getElementById('client-name').value;
-    const steps = parseInt(document.getElementById('steps').value);
-    const deadline = document.getElementById('deadline').value;
+    const name = document.getElementById("client-name").value;
+    const steps = parseInt(document.getElementById("steps").value);
+    const deadline = document.getElementById("deadline").value;
     const clientId = Date.now().toString();
     const clientLink = `${window.location.origin}/client.html?id=${clientId}`;
 
@@ -37,7 +38,7 @@ if (isAdminPage) {
       steps,
       progress: 0,
       deadline,
-      link: clientLink
+      link: clientLink,
     });
 
     clientForm.reset();
@@ -45,22 +46,22 @@ if (isAdminPage) {
   });
 
   function displayClients() {
-    const clientsRef = ref(db, 'clients');
+    const clientsRef = ref(db, "clients");
     onValue(clientsRef, (snapshot) => {
       const clients = snapshot.val();
-      clientList.innerHTML = ''; // Clear list
+      clientList.innerHTML = ""; // Clear list
       if (clients) {
         Object.keys(clients).forEach((id) => {
           const { name, progress, steps, link } = clients[id];
-          const clientDiv = document.createElement('div');
-          clientDiv.classList.add('client');
+          const clientDiv = document.createElement("div");
+          clientDiv.classList.add("client");
           clientDiv.innerHTML = `
             <div>
               <h3>${name}</h3>
               <a href="${link}" target="_blank">View Progress</a>
             </div>
             <div>
-              <input type="range" min="0" max="${steps}" value="${progress}" onchange="updateProgress('${id}', this.value)">
+              <input type="range" min="0" max="${steps}" value="${progress}" onchange="updateProgress('${id}', this.value)" class="slider">
               <span>${progress}/${steps}</span>
               <button onclick="deleteClient('${id}')">Delete</button>
             </div>
@@ -87,30 +88,38 @@ if (isAdminPage) {
 // Display progress (Client Page)
 if (isClientPage) {
   const urlParams = new URLSearchParams(window.location.search);
-  const clientId = urlParams.get('id');
+  const clientId = urlParams.get("id");
 
   const clientRef = ref(db, `clients/${clientId}`);
   get(clientRef).then((snapshot) => {
     if (snapshot.exists()) {
       const { name, steps, progress, deadline } = snapshot.val();
-      document.getElementById('client-name').textContent = name;
-      document.getElementById('deadline').textContent = `Deadline: ${deadline}`;
+      document.getElementById("client-name").textContent = name;
+      document.getElementById("deadline").textContent = `Deadline: ${deadline}`;
 
-      const progressBar = document.getElementById('progress-bar');
+      const progressBar = document.getElementById("progress-bar");
       progressBar.style.width = `${(progress / steps) * 100}%`;
+      progressBar.innerHTML = `<span id='progress-text'>${Math.round((progress / steps) * 100)}%</span>`;
 
-      const progressPercentage = document.getElementById('progress-percentage');
-      progressPercentage.textContent = `Progress: ${((progress / steps) * 100).toFixed(2)}%`;
-
-      const milestonesContainer = document.getElementById('milestones');
-      milestonesContainer.innerHTML = '';
+      const milestonesContainer = document.getElementById("milestones");
+      milestonesContainer.innerHTML = "";
       for (let i = 1; i <= steps; i++) {
-        const milestone = document.createElement('div');
+        const milestone = document.createElement("div");
         milestone.style.left = `${(i / steps) * 100}%`;
+        milestone.style.backgroundColor = progress >= i ? "#ffc300" : "#ed217c";
         milestonesContainer.appendChild(milestone);
       }
     } else {
-      document.body.innerHTML = '<h1>Client not found</h1>';
+      document.body.innerHTML = "<h1>Client not found</h1>";
     }
   });
 }
+
+// Add smooth animation
+const progressBarAnimation = () => {
+  const progressBar = document.querySelector("#progress-bar");
+  if (progressBar) {
+    progressBar.style.transition = "width 0.5s ease-in-out";
+  }
+};
+progressBarAnimation();
