@@ -9,15 +9,23 @@
   <script type="module" src="script.js"></script>
 </head>
 <body>
-  <h1>Admin Panel</h1>
-  <form id="add-client-form">
-    <input type="text" id="client-name" placeholder="Client Name" required>
-    <input type="number" id="steps" placeholder="Total Steps" required>
-    <input type="date" id="deadline" required>
-    <button type="submit">Add Client</button>
-  </form>
-
-  <h2>Client List</h2>
-  <div id="client-list"></div>
+  <header>
+    <h1>Admin Panel</h1>
+  </header>
+  <main>
+    <section class="form-section">
+      <form id="add-client-form">
+        <h2>Add a New Client</h2>
+        <input type="text" id="client-name" placeholder="Client Name" required>
+        <input type="number" id="steps" placeholder="Total Steps" required>
+        <input type="date" id="deadline" required>
+        <button type="submit">Add Client</button>
+      </form>
+    </section>
+    <section class="client-list-section">
+      <h2>Client List</h2>
+      <div id="client-list"></div>
+    </section>
+  </main>
 </body>
 </html>
