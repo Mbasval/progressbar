@@ -127,27 +127,18 @@ if (isClientPage) {
       progressBar.style.width = `${(progress / steps) * 100}%`;
       progressBar.innerHTML = `<span id='progress-text'>${Math.round((progress / steps) * 100)}%</span>`;
 
-      const milestonesContainer = document.getElementById("milestones");
-      milestonesContainer.innerHTML = "";
-      for (let i = 0; i < steps; i++) {
-        const milestone = document.createElement("div");
-        milestone.style.left = `${((i + 1) / steps) * 100}%`;
-        milestone.style.backgroundColor = progress > i ? "#ffc300" : "#ed217c";
-        milestone.title = stepDetails[i].name;
-        milestone.dataset.description = stepDetails[i].description;
-        milestone.addEventListener("mouseenter", (e) => {
-          const tooltip = document.createElement("div");
-          tooltip.classList.add("tooltip");
-          tooltip.innerHTML = `<strong>${stepDetails[i].name}</strong><br>${stepDetails[i].description}`;
-          document.body.appendChild(tooltip);
-          tooltip.style.left = `${e.pageX + 10}px`;
-          tooltip.style.top = `${e.pageY + 10}px`;
-        });
-        milestone.addEventListener("mouseleave", () => {
-          document.querySelector(".tooltip")?.remove();
-        });
-        milestonesContainer.appendChild(milestone);
-      }
+      const reportContainer = document.createElement("div");
+      reportContainer.classList.add("report-container");
+      stepDetails.forEach((step, index) => {
+        const stepReport = document.createElement("div");
+        stepReport.classList.add("step-report");
+        stepReport.innerHTML = `
+          <h3>Step ${index + 1}: ${step.name}</h3>
+          <p>${step.description}</p>
+        `;
+        reportContainer.appendChild(stepReport);
+      });
+      document.querySelector("main").appendChild(reportContainer);
     } else {
       document.body.innerHTML = "<h1>Client not found</h1>";
     }
