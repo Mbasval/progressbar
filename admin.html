@@ -16,9 +16,15 @@
     <section class="form-section">
       <form id="add-client-form">
         <h2>Add a New Client</h2>
-        <input type="text" id="client-name" placeholder="Client Name" required>
-        <input type="number" id="steps" placeholder="Total Steps" required>
-        <input type="date" id="deadline" required>
+        <div class="input-group">
+          <input type="text" id="client-name" placeholder="Client Name" required>
+        </div>
+        <div class="input-group">
+          <input type="number" id="steps" placeholder="Total Steps" required>
+        </div>
+        <div class="input-group">
+          <input type="date" id="deadline" required>
+        </div>
         <button type="submit">Add Client</button>
       </form>
     </section>
