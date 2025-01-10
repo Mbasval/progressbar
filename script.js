@@ -29,12 +29,21 @@ if (isAdminPage) {
     const name = document.getElementById("client-name").value;
     const steps = parseInt(document.getElementById("steps").value);
     const deadline = document.getElementById("deadline").value;
+
+    const stepDetails = [];
+    for (let i = 1; i <= steps; i++) {
+      const stepName = document.getElementById(`step-name-${i}`).value;
+      const stepDescription = document.getElementById(`step-description-${i}`).value;
+      stepDetails.push({ name: stepName, description: stepDescription });
+    }
+
     const clientId = Date.now().toString();
     const clientLink = `${window.location.origin}/client.html?id=${clientId}`;
 
     await set(ref(db, `clients/${clientId}`), {
       name,
       steps,
+      stepDetails,
       progress: 0,
       deadline,
       link: clientLink,
@@ -42,6 +51,24 @@ if (isAdminPage) {
 
     clientForm.reset();
     displayClients();
+  });
+
+  document.getElementById("steps").addEventListener("change", (e) => {
+    const stepContainer = document.getElementById("step-details-container");
+    stepContainer.innerHTML = ""; // Clear previous inputs
+    const steps = parseInt(e.target.value);
+
+    for (let i = 1; i <= steps; i++) {
+      const stepDiv = document.createElement("div");
+      stepDiv.classList.add("step-detail");
+      stepDiv.innerHTML = `
+        <label for="step-name-${i}">Step ${i} Name:</label>
+        <input type="text" id="step-name-${i}" placeholder="Step Name" required>
+        <label for="step-description-${i}">Step ${i} Description:</label>
+        <textarea id="step-description-${i}" placeholder="Step Description" required></textarea>
+      `;
+      stepContainer.appendChild(stepDiv);
+    }
   });
 
   function displayClients() {
@@ -92,7 +119,7 @@ if (isClientPage) {
   const clientRef = ref(db, `clients/${clientId}`);
   get(clientRef).then((snapshot) => {
     if (snapshot.exists()) {
-      const { name, steps, progress, deadline } = snapshot.val();
+      const { name, steps, progress, deadline, stepDetails } = snapshot.val();
       document.getElementById("client-name").textContent = name;
       document.getElementById("deadline").textContent = `Deadline: ${deadline}`;
 
@@ -102,10 +129,23 @@ if (isClientPage) {
 
       const milestonesContainer = document.getElementById("milestones");
       milestonesContainer.innerHTML = "";
-      for (let i = 1; i <= steps; i++) {
+      for (let i = 0; i < steps; i++) {
         const milestone = document.createElement("div");
-        milestone.style.left = `${(i / steps) * 100}%`;
-        milestone.style.backgroundColor = progress >= i ? "#ffc300" : "#ed217c";
+        milestone.style.left = `${((i + 1) / steps) * 100}%`;
+        milestone.style.backgroundColor = progress > i ? "#ffc300" : "#ed217c";
+        milestone.title = stepDetails[i].name;
+        milestone.dataset.description = stepDetails[i].description;
+        milestone.addEventListener("mouseenter", (e) => {
+          const tooltip = document.createElement("div");
+          tooltip.classList.add("tooltip");
+          tooltip.innerHTML = `<strong>${stepDetails[i].name}</strong><br>${stepDetails[i].description}`;
+          document.body.appendChild(tooltip);
+          tooltip.style.left = `${e.pageX + 10}px`;
+          tooltip.style.top = `${e.pageY + 10}px`;
+        });
+        milestone.addEventListener("mouseleave", () => {
+          document.querySelector(".tooltip")?.remove();
+        });
         milestonesContainer.appendChild(milestone);
       }
     } else {
