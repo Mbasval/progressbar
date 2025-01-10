@@ -44,4 +44,25 @@ button:hover {
   height: 30px;
   background-color: #4caf50;
   width: 0;
+  position: relative;
+}
+
+#milestones {
+  position: relative;
+  height: 30px;
+}
+
+#milestones div {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  background-color: white;
+  border: 2px solid black;
+  border-radius: 50%;
+}
+
+#progress-percentage {
+  margin-top: 10px;
 }
