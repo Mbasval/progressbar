@@ -9,19 +9,21 @@
 </head>
 <body>
   <header>
-    <h1>Admin Panel</h1>
+    <h1>Admin Dashboard</h1>
   </header>
   <main>
-    <form id="add-client-form">
-      <h2>Add New Client</h2>
-      <input type="text" id="client-name" placeholder="Client Name" required>
-      <input type="number" id="steps" placeholder="Total Steps" required>
-      <input type="date" id="deadline" required>
-      <div id="step-details-container"></div>
-      <button type="submit">Add Client</button>
-    </form>
-    <section>
-      <h2>Client List</h2>
+    <section class="form-section">
+      <h2>Add a New Client</h2>
+      <form id="add-client-form">
+        <input type="text" id="client-name" placeholder="Client Name" required>
+        <input type="number" id="steps" placeholder="Total Steps" required>
+        <input type="date" id="deadline" required>
+        <div id="step-details-container"></div>
+        <button type="submit">Add Client</button>
+      </form>
+    </section>
+    <section class="clients-section">
+      <h2>Clients</h2>
       <div id="client-list"></div>
     </section>
   </main>
