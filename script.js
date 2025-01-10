@@ -95,8 +95,20 @@ if (isClientPage) {
       const { name, steps, progress, deadline } = snapshot.val();
       document.getElementById('client-name').textContent = name;
       document.getElementById('deadline').textContent = `Deadline: ${deadline}`;
+
       const progressBar = document.getElementById('progress-bar');
       progressBar.style.width = `${(progress / steps) * 100}%`;
+
+      const progressPercentage = document.getElementById('progress-percentage');
+      progressPercentage.textContent = `Progress: ${((progress / steps) * 100).toFixed(2)}%`;
+
+      const milestonesContainer = document.getElementById('milestones');
+      milestonesContainer.innerHTML = '';
+      for (let i = 1; i <= steps; i++) {
+        const milestone = document.createElement('div');
+        milestone.style.left = `${(i / steps) * 100}%`;
+        milestonesContainer.appendChild(milestone);
+      }
     } else {
       document.body.innerHTML = '<h1>Client not found</h1>';
     }
