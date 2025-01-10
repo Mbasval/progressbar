@@ -4,13 +4,13 @@ import { getDatabase, ref, set, get, update, remove, onValue } from "https://www
 
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "your-api-key",
-  authDomain: "your-auth-domain",
-  databaseURL: "your-database-url",
-  projectId: "your-project-id",
-  storageBucket: "your-storage-bucket",
-  messagingSenderId: "your-messaging-sender-id",
-  appId: "your-app-id",
+  apiKey: "AIzaSyCQDrZD_BGyXtvCJwhMNX0eOywLLObA-xo",
+    authDomain: "progress-bar-e1b94.firebaseapp.com",
+    databaseURL: "https://progress-bar-e1b94-default-rtdb.firebaseio.com",
+    projectId: "progress-bar-e1b94",
+    storageBucket: "progress-bar-e1b94.firebasestorage.app",
+    messagingSenderId: "1038468595103",
+    appId: "1:1038468595103:web:7f1a8291298c2b0
 };
 
 // Initialize Firebase
