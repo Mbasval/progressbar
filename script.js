@@ -154,6 +154,10 @@ if (isAdminPage) {
               <p>Progress: ${progress}/${steps}</p>
               <a href="${link}" target="_blank">View Progress</a>
             </div>
+            <div>
+              <input type="range" min="0" max="${steps}" value="${progress}" onchange="updateProgress('${id}', this.value)" class="slider">
+              <button onclick="deleteClient('${id}')">Delete</button>
+            </div>
           `;
           clientList.appendChild(clientDiv);
         });
@@ -162,6 +166,15 @@ if (isAdminPage) {
       }
     });
   }
+
+  window.updateProgress = async (id, value) => {
+    await update(ref(db, `clients/${id}`), { progress: parseInt(value) });
+  };
+
+  window.deleteClient = async (id) => {
+    await remove(ref(db, `clients/${id}`));
+    alert("Client deleted successfully!");
+  };
 
   displayClients();
 }
