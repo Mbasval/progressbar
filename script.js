@@ -19,30 +19,31 @@ const db = getDatabase(app);
 const isAdminPage = window.location.pathname.includes("admin.html");
 const isClientPage = window.location.pathname.includes("client.html");
 
-// Admin Page Logic
+// Admin Page Functionality
 if (isAdminPage) {
   const clientForm = document.getElementById("add-client-form");
   const clientList = document.getElementById("client-list");
 
-  // Variables for Step-by-Step Navigation
-  let totalSteps = 0;
+  // Variables for Step-by-Step Wizard
   let currentStepIndex = 0;
+  let totalSteps = 0;
   const stepDetails = [];
 
+  // Start Wizard for Adding Steps
   document.getElementById("steps").addEventListener("change", (e) => {
     totalSteps = parseInt(e.target.value);
     if (totalSteps < 1) {
       alert("Please enter a valid number of steps.");
       return;
     }
-    startStepSetup();
+    initializeWizard();
   });
 
-  function startStepSetup() {
+  function initializeWizard() {
     const stepContainer = document.getElementById("step-details-container");
     stepContainer.innerHTML = `
-      <div id="step-setup">
-        <h3 id="step-title">Step 1 of ${totalSteps}</h3>
+      <div id="wizard-container">
+        <h3 id="step-counter">Step 1 of ${totalSteps}</h3>
         <label for="step-name">Step Name:</label>
         <input type="text" id="step-name" placeholder="Step Name" required>
         <label for="step-description">Step Description:</label>
@@ -51,7 +52,10 @@ if (isAdminPage) {
         <button id="next-step">Next</button>
       </div>
     `;
+    attachWizardListeners();
+  }
 
+  function attachWizardListeners() {
     const nextButton = document.getElementById("next-step");
     const prevButton = document.getElementById("prev-step");
 
@@ -64,7 +68,7 @@ if (isAdminPage) {
     const stepDescription = document.getElementById("step-description").value;
 
     if (!stepName || !stepDescription) {
-      alert("Please fill out all fields.");
+      alert("Please complete all fields.");
       return;
     }
 
@@ -76,27 +80,26 @@ if (isAdminPage) {
     }
 
     currentStepIndex++;
-    updateStepUI();
+    updateWizardUI();
   }
 
   function handlePrevStep() {
     if (currentStepIndex === 0) return;
-
     currentStepIndex--;
-    updateStepUI();
+    updateWizardUI();
   }
 
-  function updateStepUI() {
-    document.getElementById("step-title").textContent = `Step ${currentStepIndex + 1} of ${totalSteps}`;
+  function updateWizardUI() {
+    document.getElementById("step-counter").textContent = `Step ${currentStepIndex + 1} of ${totalSteps}`;
     document.getElementById("step-name").value = stepDetails[currentStepIndex]?.name || "";
     document.getElementById("step-description").value = stepDetails[currentStepIndex]?.description || "";
-
     document.getElementById("prev-step").classList.toggle("hidden", currentStepIndex === 0);
   }
 
   function finalizeSteps() {
-    alert("Steps configured successfully! You can now submit the client.");
-    document.getElementById("step-details-container").innerHTML = `
+    alert("Steps have been successfully added! You can now submit the client.");
+    const stepContainer = document.getElementById("step-details-container");
+    stepContainer.innerHTML = `
       <h4>Steps Summary</h4>
       <ul>
         ${stepDetails.map((step, i) => `<li>Step ${i + 1}: ${step.name} - ${step.description}</li>`).join("")}
@@ -174,7 +177,7 @@ if (isAdminPage) {
   };
 }
 
-// Client Page Logic
+// Client Page Functionality
 if (isClientPage) {
   const urlParams = new URLSearchParams(window.location.search);
   const clientId = urlParams.get("id");

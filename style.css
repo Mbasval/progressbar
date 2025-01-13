@@ -157,38 +157,6 @@ form button:hover {
   color: #495057;
 }
 
-/* Step-by-Step Navigation */
-#step-setup {
-  margin-top: 20px;
-}
-
-#step-setup h3 {
-  margin-bottom: 15px;
-  font-size: 1.2rem;
-  color: #212529;
-}
-
-#step-setup input, #step-setup textarea {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 8px;
-  border: 1px solid #ced4da;
-  font-size: 1rem;
-}
-
-#step-setup button {
-  padding: 10px 15px;
-  margin: 10px 5px 0 0;
-  border-radius: 8px;
-  font-size: 1rem;
-}
-
-#step-setup button.hidden {
-  display: none;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
   header h1 {
@@ -220,18 +188,6 @@ form button:hover {
   }
 
   .step-report p {
-    font-size: 0.9rem;
-  }
-
-  #step-setup h3 {
-    font-size: 1rem;
-  }
-
-  #step-setup input, #step-setup textarea {
-    font-size: 0.9rem;
-  }
-
-  #step-setup button {
     font-size: 0.9rem;
   }
 }
