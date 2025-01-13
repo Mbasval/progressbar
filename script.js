@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
 import { getDatabase, ref, set, get, update, remove, onValue } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-storage.js";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -15,6 +16,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const storage = getStorage(app);
 
 const isAdminPage = window.location.pathname.includes("admin.html");
 const isClientPage = window.location.pathname.includes("client.html");
@@ -24,22 +26,15 @@ if (isAdminPage) {
   const clientForm = document.getElementById("add-client-form");
   const clientList = document.getElementById("client-list");
 
-  // Variables for Step-by-Step Wizard
-  let currentStepIndex = 0;
   let totalSteps = 0;
-  const stepDetails = [];
+  let stepDetails = [];
 
-  // Start Wizard for Adding Steps
   document.getElementById("steps").addEventListener("change", (e) => {
     totalSteps = parseInt(e.target.value);
-    if (totalSteps < 1) {
-      alert("Please enter a valid number of steps.");
-      return;
-    }
-    initializeWizard();
+    initializeStepWizard();
   });
 
-  function initializeWizard() {
+  function initializeStepWizard() {
     const stepContainer = document.getElementById("step-details-container");
     stepContainer.innerHTML = `
       <div id="wizard-container">
@@ -72,34 +67,33 @@ if (isAdminPage) {
       return;
     }
 
-    stepDetails[currentStepIndex] = { name: stepName, description: stepDescription };
+    stepDetails.push({ name: stepName, description: stepDescription });
 
-    if (currentStepIndex + 1 === totalSteps) {
+    if (stepDetails.length === totalSteps) {
       finalizeSteps();
       return;
     }
 
-    currentStepIndex++;
     updateWizardUI();
   }
 
   function handlePrevStep() {
-    if (currentStepIndex === 0) return;
-    currentStepIndex--;
+    if (stepDetails.length === 0) return;
+    stepDetails.pop();
     updateWizardUI();
   }
 
   function updateWizardUI() {
-    document.getElementById("step-counter").textContent = `Step ${currentStepIndex + 1} of ${totalSteps}`;
-    document.getElementById("step-name").value = stepDetails[currentStepIndex]?.name || "";
-    document.getElementById("step-description").value = stepDetails[currentStepIndex]?.description || "";
-    document.getElementById("prev-step").classList.toggle("hidden", currentStepIndex === 0);
+    const currentStep = stepDetails.length + 1;
+    document.getElementById("step-counter").textContent = `Step ${currentStep} of ${totalSteps}`;
+    document.getElementById("step-name").value = "";
+    document.getElementById("step-description").value = "";
+    document.getElementById("prev-step").classList.toggle("hidden", stepDetails.length === 0);
   }
 
   function finalizeSteps() {
-    alert("Steps have been successfully added! You can now submit the client.");
-    const stepContainer = document.getElementById("step-details-container");
-    stepContainer.innerHTML = `
+    alert("Steps added successfully. Submit the form to complete.");
+    document.getElementById("step-details-container").innerHTML = `
       <h4>Steps Summary</h4>
       <ul>
         ${stepDetails.map((step, i) => `<li>Step ${i + 1}: ${step.name} - ${step.description}</li>`).join("")}
@@ -111,15 +105,21 @@ if (isAdminPage) {
     e.preventDefault();
     const name = document.getElementById("client-name").value;
     const deadline = document.getElementById("deadline").value;
+    const logoFile = document.getElementById("client-logo").files[0];
 
-    if (!name || !deadline || stepDetails.length !== totalSteps) {
-      alert("Please complete all fields and steps.");
+    if (!name || !deadline || stepDetails.length !== totalSteps || !logoFile) {
+      alert("Please complete all fields and upload a logo.");
       return;
     }
 
-    const clientId = `${name.replace(/\s+/g, '-').toLowerCase()}-${Date.now().toString()}`;
-    const clientLink = `${window.location.origin}/client.html?id=${clientId}`;
+    const clientId = `${name.replace(/\s+/g, '-').toLowerCase()}-${Date.now()}`;
+    const clientLogoRef = storageRef(storage, `client-logos/${clientId}`);
 
+    // Upload logo to Firebase Storage
+    await uploadBytes(clientLogoRef, logoFile);
+    const logoURL = await getDownloadURL(clientLogoRef);
+
+    const clientLink = `${window.location.origin}/client.html?id=${clientId}`;
     await set(ref(db, `clients/${clientId}`), {
       name,
       steps: totalSteps,
@@ -127,12 +127,13 @@ if (isAdminPage) {
       progress: 0,
       deadline,
       link: clientLink,
+      logo: logoURL,
     });
 
+    alert("Client added successfully!");
     clientForm.reset();
-    stepDetails.length = 0;
+    stepDetails = [];
     totalSteps = 0;
-    currentStepIndex = 0;
     displayClients();
   });
 
@@ -153,10 +154,6 @@ if (isAdminPage) {
               <p>Progress: ${progress}/${steps}</p>
               <a href="${link}" target="_blank">View Progress</a>
             </div>
-            <div>
-              <input type="range" min="0" max="${steps}" value="${progress}" onchange="updateProgress('${id}', this.value)" class="slider">
-              <button onclick="deleteClient('${id}')">Delete</button>
-            </div>
           `;
           clientList.appendChild(clientDiv);
         });
@@ -167,14 +164,6 @@ if (isAdminPage) {
   }
 
   displayClients();
-
-  window.updateProgress = async (id, value) => {
-    await update(ref(db, `clients/${id}`), { progress: parseInt(value) });
-  };
-
-  window.deleteClient = async (id) => {
-    await remove(ref(db, `clients/${id}`));
-  };
 }
 
 // Client Page Functionality
@@ -185,9 +174,10 @@ if (isClientPage) {
   const clientRef = ref(db, `clients/${clientId}`);
   get(clientRef).then((snapshot) => {
     if (snapshot.exists()) {
-      const { name, steps, progress, deadline, stepDetails } = snapshot.val();
+      const { name, steps, progress, deadline, stepDetails, logo } = snapshot.val();
       document.getElementById("client-name").textContent = name;
       document.getElementById("deadline").textContent = `Deadline: ${deadline}`;
+      document.getElementById("client-logo").src = logo;
 
       const progressBar = document.getElementById("progress-bar");
       progressBar.style.width = `${(progress / steps) * 100}%`;
