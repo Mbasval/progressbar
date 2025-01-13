@@ -19,22 +19,99 @@ const db = getDatabase(app);
 const isAdminPage = window.location.pathname.includes("admin.html");
 const isClientPage = window.location.pathname.includes("client.html");
 
-// Add client (Admin Page)
+// Admin Page Logic
 if (isAdminPage) {
   const clientForm = document.getElementById("add-client-form");
   const clientList = document.getElementById("client-list");
 
+  // Variables for Step-by-Step Navigation
+  let totalSteps = 0;
+  let currentStepIndex = 0;
+  const stepDetails = [];
+
+  document.getElementById("steps").addEventListener("change", (e) => {
+    totalSteps = parseInt(e.target.value);
+    if (totalSteps < 1) {
+      alert("Please enter a valid number of steps.");
+      return;
+    }
+    startStepSetup();
+  });
+
+  function startStepSetup() {
+    const stepContainer = document.getElementById("step-details-container");
+    stepContainer.innerHTML = `
+      <div id="step-setup">
+        <h3 id="step-title">Step 1 of ${totalSteps}</h3>
+        <label for="step-name">Step Name:</label>
+        <input type="text" id="step-name" placeholder="Step Name" required>
+        <label for="step-description">Step Description:</label>
+        <textarea id="step-description" placeholder="Step Description" required></textarea>
+        <button id="prev-step" class="hidden">Back</button>
+        <button id="next-step">Next</button>
+      </div>
+    `;
+
+    const nextButton = document.getElementById("next-step");
+    const prevButton = document.getElementById("prev-step");
+
+    nextButton.addEventListener("click", handleNextStep);
+    prevButton.addEventListener("click", handlePrevStep);
+  }
+
+  function handleNextStep() {
+    const stepName = document.getElementById("step-name").value;
+    const stepDescription = document.getElementById("step-description").value;
+
+    if (!stepName || !stepDescription) {
+      alert("Please fill out all fields.");
+      return;
+    }
+
+    stepDetails[currentStepIndex] = { name: stepName, description: stepDescription };
+
+    if (currentStepIndex + 1 === totalSteps) {
+      finalizeSteps();
+      return;
+    }
+
+    currentStepIndex++;
+    updateStepUI();
+  }
+
+  function handlePrevStep() {
+    if (currentStepIndex === 0) return;
+
+    currentStepIndex--;
+    updateStepUI();
+  }
+
+  function updateStepUI() {
+    document.getElementById("step-title").textContent = `Step ${currentStepIndex + 1} of ${totalSteps}`;
+    document.getElementById("step-name").value = stepDetails[currentStepIndex]?.name || "";
+    document.getElementById("step-description").value = stepDetails[currentStepIndex]?.description || "";
+
+    document.getElementById("prev-step").classList.toggle("hidden", currentStepIndex === 0);
+  }
+
+  function finalizeSteps() {
+    alert("Steps configured successfully! You can now submit the client.");
+    document.getElementById("step-details-container").innerHTML = `
+      <h4>Steps Summary</h4>
+      <ul>
+        ${stepDetails.map((step, i) => `<li>Step ${i + 1}: ${step.name} - ${step.description}</li>`).join("")}
+      </ul>
+    `;
+  }
+
   clientForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const name = document.getElementById("client-name").value;
-    const steps = parseInt(document.getElementById("steps").value);
     const deadline = document.getElementById("deadline").value;
 
-    const stepDetails = [];
-    for (let i = 1; i <= steps; i++) {
-      const stepName = document.getElementById(`step-name-${i}`).value;
-      const stepDescription = document.getElementById(`step-description-${i}`).value;
-      stepDetails.push({ name: stepName, description: stepDescription });
+    if (!name || !deadline || stepDetails.length !== totalSteps) {
+      alert("Please complete all fields and steps.");
+      return;
     }
 
     const clientId = `${name.replace(/\s+/g, '-').toLowerCase()}-${Date.now().toString()}`;
@@ -42,7 +119,7 @@ if (isAdminPage) {
 
     await set(ref(db, `clients/${clientId}`), {
       name,
-      steps,
+      steps: totalSteps,
       stepDetails,
       progress: 0,
       deadline,
@@ -50,32 +127,17 @@ if (isAdminPage) {
     });
 
     clientForm.reset();
+    stepDetails.length = 0;
+    totalSteps = 0;
+    currentStepIndex = 0;
     displayClients();
-  });
-
-  document.getElementById("steps").addEventListener("change", (e) => {
-    const stepContainer = document.getElementById("step-details-container");
-    stepContainer.innerHTML = ""; // Clear previous inputs
-    const steps = parseInt(e.target.value);
-
-    for (let i = 1; i <= steps; i++) {
-      const stepDiv = document.createElement("div");
-      stepDiv.classList.add("step-detail");
-      stepDiv.innerHTML = `
-        <label for="step-name-${i}">Step ${i} Name:</label>
-        <input type="text" id="step-name-${i}" placeholder="Step Name" required>
-        <label for="step-description-${i}">Step ${i} Description:</label>
-        <textarea id="step-description-${i}" placeholder="Step Description" required></textarea>
-      `;
-      stepContainer.appendChild(stepDiv);
-    }
   });
 
   function displayClients() {
     const clientsRef = ref(db, "clients");
     onValue(clientsRef, (snapshot) => {
       const clients = snapshot.val();
-      clientList.innerHTML = ""; // Clear list
+      clientList.innerHTML = "";
       if (clients) {
         Object.keys(clients).forEach((id) => {
           const { name, progress, steps, link, deadline } = clients[id];
@@ -96,7 +158,7 @@ if (isAdminPage) {
           clientList.appendChild(clientDiv);
         });
       } else {
-        clientList.innerHTML = '<p>No clients added yet.</p>';
+        clientList.innerHTML = "<p>No clients added yet.</p>";
       }
     });
   }
@@ -112,7 +174,7 @@ if (isAdminPage) {
   };
 }
 
-// Display progress (Client Page)
+// Client Page Logic
 if (isClientPage) {
   const urlParams = new URLSearchParams(window.location.search);
   const clientId = urlParams.get("id");
@@ -130,18 +192,11 @@ if (isClientPage) {
 
       const milestonesContainer = document.createElement("div");
       milestonesContainer.classList.add("milestones-container");
-      milestonesContainer.style.position = "absolute";
-      milestonesContainer.style.width = "100%";
-      milestonesContainer.style.height = "100%";
 
       for (let i = 1; i <= steps; i++) {
         const milestone = document.createElement("div");
         milestone.classList.add("milestone");
-        milestone.style.position = "absolute";
         milestone.style.left = `${(i / steps) * 100}%`;
-        milestone.style.top = "0";
-        milestone.style.height = "100%";
-        milestone.style.width = "2px";
         milestone.style.backgroundColor = progress >= i ? "#007bff" : "#ccc";
         milestonesContainer.appendChild(milestone);
       }
@@ -152,26 +207,13 @@ if (isClientPage) {
       reportContainer.classList.add("report-container");
 
       const currentStep = stepDetails[progress] || { name: "All steps complete", description: "Great job!" };
-      const stepReport = document.createElement("div");
-      stepReport.classList.add("step-report");
-      stepReport.innerHTML = `
+      reportContainer.innerHTML = `
         <h3>Current Step: ${currentStep.name}</h3>
         <p>${currentStep.description}</p>
       `;
-
-      reportContainer.appendChild(stepReport);
       document.querySelector("main").appendChild(reportContainer);
     } else {
       document.body.innerHTML = "<h1>Client not found</h1>";
     }
   });
 }
-
-// Add smooth animation
-const progressBarAnimation = () => {
-  const progressBar = document.querySelector("#progress-bar");
-  if (progressBar) {
-    progressBar.style.transition = "width 0.5s ease-in-out";
-  }
-};
-progressBarAnimation();

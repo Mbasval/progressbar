@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel</title>
+  <title>Admin Dashboard</title>
   <link rel="stylesheet" href="style.css">
   <script type="module" src="script.js"></script>
 </head>
@@ -12,16 +12,39 @@
     <h1>Admin Dashboard</h1>
   </header>
   <main>
+    <!-- Setup Client Section -->
     <section class="form-section">
-      <h2>Add a New Client</h2>
-      <form id="add-client-form">
-        <input type="text" id="client-name" placeholder="Client Name" required>
-        <input type="number" id="steps" placeholder="Total Steps" required>
-        <input type="date" id="deadline" required>
-        <div id="step-details-container"></div>
-        <button type="submit">Add Client</button>
+      <h2>Setup Client</h2>
+      <form id="setup-client-form">
+        <!-- Step 1: Client Information -->
+        <div class="wizard-step active" id="step-1">
+          <h3>Step 1: Client Information</h3>
+          <input type="text" id="client-name" placeholder="Client Name" required>
+          <input type="date" id="deadline" placeholder="Deadline" required>
+          <input type="number" id="steps" placeholder="Total Steps" min="1" required>
+          <button type="button" class="next-step">Next</button>
+        </div>
+
+        <!-- Step 2: Step-by-Step Navigation -->
+        <div class="wizard-step hidden" id="step-2">
+          <h3 id="step-counter">Step 2 of X: Step Details</h3>
+          <input type="text" id="step-name" placeholder="Step Name" required>
+          <textarea id="step-description" placeholder="Step Description" required></textarea>
+          <button type="button" class="prev-step">Back</button>
+          <button type="button" class="next-step">Next</button>
+        </div>
+
+        <!-- Step 3: Review and Submit -->
+        <div class="wizard-step hidden" id="step-3">
+          <h3>Review and Submit</h3>
+          <div id="review-container"></div>
+          <button type="button" class="prev-step">Back</button>
+          <button type="submit">Finish</button>
+        </div>
       </form>
     </section>
+
+    <!-- Client List -->
     <section class="clients-section">
       <h2>Clients</h2>
       <div id="client-list"></div>
